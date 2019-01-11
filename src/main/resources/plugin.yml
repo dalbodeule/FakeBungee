@@ -1,0 +1,14 @@
+name: FakeBungee
+version: @version@
+main: space.mori.fakebungee.FakeBungee
+authors: [small_sunshine, ranolp]
+
+commands:
+  ping:
+    usage: "Usage: /<command>"
+    permission: fb.ping
+
+permissions:
+  fb.ping:
+    description: Allows ping command
+    default: true
