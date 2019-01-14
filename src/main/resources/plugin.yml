@@ -1,14 +1,21 @@
 name: FakeBungee
 version: @version@
 main: space.mori.fakebungee.FakeBungee
+depend: [kotlinbukkit, WorldEdit]
 authors: [small_sunshine, ranolp]
 
 commands:
   ping:
     usage: "Usage: /<command>"
     permission: fb.ping
+  region:
+    usage: "Usage: /<command>"
+    permission: fb.region
 
 permissions:
   fb.ping:
     description: Allows ping command
     default: true
+  fb.region:
+    description: Allows region command
+    default: op
