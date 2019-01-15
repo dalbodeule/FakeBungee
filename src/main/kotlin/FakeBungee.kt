@@ -14,7 +14,7 @@ class FakeBungee : JavaPlugin() {
     override fun onEnable() {
         FakeBungee.instance = this
         getCommand("ping").executor = Ping
-        getCommand("region").executor = RegionCommand
+        getCommand("fregion").executor = RegionCommand
 
         RegionManager.load()
         RegionManager.runTaskTimer(this, 0, 20)
