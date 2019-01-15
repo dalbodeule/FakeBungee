@@ -1,7 +1,7 @@
 name: FakeBungee
 version: @version@
 main: space.mori.fakebungee.FakeBungee
-depend: [kotlinbukkit, WorldEdit]
+depend: [kotlinbukkit, ProtocolLib, WorldEdit]
 authors: [small_sunshine, ranolp]
 
 commands:

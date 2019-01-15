@@ -128,5 +128,15 @@ object RegionCommand : CommandExecutor {
 
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Region `$name` has successfully deleted.")
         }
+    }, object : SubCommand {
+        override val name = "reload"
+        override val parameter : String = "reload"
+        override val description: String = "Reload the Region settings."
+
+        override fun execute(sender: CommandSender, args: List<String>) {
+            RegionManager.load()
+
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Region settings have been successfully reloaded.")
+        }
     }).associateBy { it.name }
 }
