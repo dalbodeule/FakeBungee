@@ -87,6 +87,7 @@ object RegionCommand : CommandExecutor {
             )
 
             RegionManager.regions[name] = newRegion
+            RegionManager.save()
 
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Region `$name` has successfully added.")
         }
@@ -98,6 +99,34 @@ object RegionCommand : CommandExecutor {
         override fun execute(sender: CommandSender, args: List<String>) {
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The regions of server:")
             sender.sendMessage(RegionManager.regions.values.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE}${it.name}" }.toTypedArray())
+        }
+    }, object : SubCommand {
+        override val name = "delete"
+        override val parameter : String = "delete <name>"
+        override val description: String = "Delete a region which named the supplied name parameter based"
+
+        override fun execute(sender: CommandSender, args: List<String>) {
+            if (sender !is Player) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You can't run this command because you are not player.")
+                return
+            }
+
+            if (args.isEmpty()) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the name of region, spaces are not allowed.")
+                return
+            }
+
+            val name = args[0]
+
+            if (name !in RegionManager.regions) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Region $name is already exists, Please use another name.")
+                return
+            }
+
+            RegionManager.regions.remove(name)
+            RegionManager.save()
+
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Region `$name` has successfully deleted.")
         }
     }).associateBy { it.name }
 }
