@@ -101,7 +101,7 @@ object RegionCommand : CommandExecutor {
         }
     }, object : SubCommand {
         override val name = "delete"
-        override val parameter : String = "delete <name>"
+        override val parameter: String = "delete <name>"
         override val description: String = "Delete a region which named the supplied name parameter based"
 
         override fun execute(sender: CommandSender, args: List<String>) {
@@ -129,7 +129,7 @@ object RegionCommand : CommandExecutor {
         }
     }, object : SubCommand {
         override val name = "reload"
-        override val parameter : String = "reload"
+        override val parameter: String = "reload"
         override val description: String = "Reload the Region settings."
 
         override fun execute(sender: CommandSender, args: List<String>) {
