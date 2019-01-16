@@ -1,4 +1,4 @@
-package space.mori.fakebungee.region.impl
+package space.mori.fakebungee.region
 
 import org.bukkit.Location
 import org.bukkit.entity.Player

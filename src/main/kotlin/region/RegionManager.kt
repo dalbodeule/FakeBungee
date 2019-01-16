@@ -4,7 +4,6 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import space.mori.fakebungee.FakeBungee
-import space.mori.fakebungee.region.impl.Region
 import space.mori.fakebungee.util.parseJsonTo
 import space.mori.fakebungee.util.serializeJsonString
 import java.nio.file.Files

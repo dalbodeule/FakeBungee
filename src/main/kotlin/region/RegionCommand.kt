@@ -6,7 +6,6 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import space.mori.fakebungee.region.impl.Region
 import space.mori.fakebungee.util.bukkit
 import space.mori.fakebungee.util.session
 import space.mori.fakebungee.util.worldEdit
