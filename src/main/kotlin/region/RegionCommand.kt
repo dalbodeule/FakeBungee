@@ -118,7 +118,7 @@ object RegionCommand : CommandExecutor {
             val name = args[0]
 
             if (name !in RegionManager.regions) {
-                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Region $name is already exists, Please use another name.")
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Region $name is not exists, Please use another name.")
                 return
             }
 
