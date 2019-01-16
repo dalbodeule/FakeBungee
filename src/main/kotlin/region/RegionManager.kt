@@ -4,6 +4,8 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import space.mori.fakebungee.FakeBungee
+import space.mori.fakebungee.region.event.RegionEnterEvent
+import space.mori.fakebungee.region.event.RegionExitEvent
 import space.mori.fakebungee.util.parseJsonTo
 import space.mori.fakebungee.util.serializeJsonString
 import java.nio.file.Files
@@ -18,13 +20,22 @@ object RegionManager : BukkitRunnable() {
     override fun run() {
         // O(playerCount * regionCount)
         for (player in Bukkit.getOnlinePlayers()) {
-            val playerRegions = mutableSetOf<Region>()
+            val before = playerRegionMap[player.uniqueId] ?: emptySet()
+            val after = mutableSetOf<Region>()
             for (region in RegionManager.regions.values) {
                 if (player in region) {
-                    playerRegions += region
+                    after += region
                 }
             }
-            RegionManager.playerRegionMap[player.uniqueId] = playerRegions
+            val entered = after.filter { it !in before }
+            val exited = before.filter { it !in after }
+            entered.forEach {
+                Bukkit.getPluginManager().callEvent(RegionEnterEvent(player, it))
+            }
+            exited.forEach {
+                Bukkit.getPluginManager().callEvent(RegionExitEvent(player, it))
+            }
+            RegionManager.playerRegionMap[player.uniqueId] = after
         }
     }
 
