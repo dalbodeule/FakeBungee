@@ -20,6 +20,8 @@
    - https://github.com/finalchild/kotlinbukkit
  - WorldEdit
    - https://github.com/EngineHub/WorldEdit
+ - ProtocolLib
+   - https://github.com/dmulloy2/ProtocolLib/
  
 ## License
 

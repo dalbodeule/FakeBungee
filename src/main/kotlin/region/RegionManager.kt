@@ -3,6 +3,9 @@ package space.mori.fakebungee.region
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.player.PlayerQuitEvent
 import space.mori.fakebungee.FakeBungee
 import space.mori.fakebungee.region.event.RegionEnterEvent
 import space.mori.fakebungee.region.event.RegionExitEvent
@@ -54,6 +57,11 @@ object RegionManager : BukkitRunnable() {
         }
 
         Files.write(target, regions.serializeJsonString().toByteArray())
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    internal fun onQuit(event: PlayerQuitEvent) {
+        this.playerRegionMap.remove(event.player.uniqueId)
     }
 }
 
