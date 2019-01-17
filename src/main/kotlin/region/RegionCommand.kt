@@ -137,5 +137,19 @@ object RegionCommand : CommandExecutor {
 
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Region settings have been successfully reloaded.")
         }
+    }, object : SubCommand {
+        override val name = "debug"
+        override val parameter: String = "debug"
+        override val description: String = "debugging command"
+
+        override fun execute(sender: CommandSender, args: List<String>) {
+            if (sender !is Player) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You can't run this command because you are not player.")
+                return
+            }
+
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The regions of your:")
+            sender.sendMessage(sender.currentRegions.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE}${it.name}" }.toTypedArray())
+        }
     }).associateBy { it.name }
 }
