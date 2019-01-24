@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
 import space.mori.fakebungee.region.Region
 import space.mori.fakebungee.region.currentRegions
@@ -18,6 +19,10 @@ class ResourcePack constructor(private val plugin: JavaPlugin) {
     val RegionResourcePackMap : MutableMap<Region, ResourcePackType> = mutableMapOf()
     private val protocolManager: ProtocolManager = ProtocolLibrary.getProtocolManager()
 
+    internal fun resourcePack() {
+        plugin.logger.info("ResourcePack module initializing... success!")
+    }
+
     @EventHandler(priority = EventPriority.NORMAL)
     internal fun onRegionEnter(event: RegionEnterEvent) {
         sendResourcePack(event.player)
@@ -25,6 +30,11 @@ class ResourcePack constructor(private val plugin: JavaPlugin) {
 
     @EventHandler(priority = EventPriority.NORMAL)
     internal fun onRegionExit(event: RegionExitEvent) {
+        sendResourcePack(event.player)
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    internal fun onPlayerJoinEvent(event: PlayerJoinEvent) {
         sendResourcePack(event.player)
     }
 

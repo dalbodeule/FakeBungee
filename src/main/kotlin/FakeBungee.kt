@@ -22,9 +22,9 @@ class FakeBungee : JavaPlugin() {
         RegionManager.load()
         RegionManager.runTaskTimer(this, 0, 20)
 
-        Chat(this)
+        Chat(this).chat()
         PlayerList(this).playerList()
-        ResourcePack(this)
+        ResourcePack(this).resourcePack()
 
 
         logger.info("${this.description.name} v${this.description.version} was loaded successfully.")

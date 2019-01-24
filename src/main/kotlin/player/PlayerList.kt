@@ -21,6 +21,7 @@ import space.mori.fakebungee.region.RegionManager
 import space.mori.fakebungee.region.currentRegions
 import space.mori.fakebungee.region.event.RegionEnterEvent
 import space.mori.fakebungee.region.event.RegionExitEvent
+import space.mori.fakebungee.util.serializeJsonString
 import java.lang.reflect.InvocationTargetException
 
 class PlayerList constructor(private val plugin: JavaPlugin) {
@@ -35,10 +36,12 @@ class PlayerList constructor(private val plugin: JavaPlugin) {
                     makePlayerListHF(event)
                 }
                 if (event.packet.playerInfoAction.read(0) == EnumWrappers.PlayerInfoAction.ADD_PLAYER) {
-                    makePlayerListUL(event)
+                    // makePlayerListUL(event)
                 }
             }
         })
+
+        plugin.logger.info("PlayerList module initializing... success!")
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -128,10 +131,13 @@ class PlayerList constructor(private val plugin: JavaPlugin) {
             }
         }
 
-        ulPacket.playerInfoDataLists.write(0, playerInfoDataList)
+        ulPacket.chatComponents
+            //.write(0, WrappedChatComponent.fromText("0"))
+            .write(1, WrappedChatComponent.fromText("${playerInfoDataList.size}"))
+            .write(2, WrappedChatComponent.fromJson(playerInfoDataList.serializeJsonString()))
 
         try {
-            // protocolManager.sendServerPacket(player, ulPacket)
+            protocolManager.sendServerPacket(player, ulPacket)
             plugin.logger.info("send ul packet for ${player.name}")
         } catch (e: InvocationTargetException) {
             e.printStackTrace()
