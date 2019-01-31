@@ -1,46 +1,39 @@
 package space.mori.fakebungee.player
 
-
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.plugin.java.JavaPlugin
 import space.mori.fakebungee.region.RegionManager
 import space.mori.fakebungee.region.currentRegions
 
-class Chat constructor(private val plugin: JavaPlugin) {
+class Chat (private val plugin: JavaPlugin) : Listener {
     internal fun chat() {
         plugin.logger.info("Chat module initializing... success!")
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     internal fun onChat(event: AsyncPlayerChatEvent) {
-        val region : String = getRegionName(event.player)
+        val region : String? = event.player.currentRegions.map { it.name }.firstOrNull()
 
-        if (region == "null") {
+        if (region == null) {
             event.player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You can't chat.")
         } else {
+            plugin.logger.info("${RegionManager.getRegionName(event.player)}; ${event.player.displayName} : ${event.message}")
             for (data in RegionManager.playerRegionMap) {
                 if (data.value.first().name == region) {
-                    Bukkit.getPlayer(data.key).sendMessage(event.message)
+                    Bukkit.getPlayer(data.key).sendMessage(
+                        "${event.player.displayName}: ${event.message}"
+                    )
                 } else {
                     continue
                 }
             }
         }
 
-        event.isCancelled
-    }
-
-    private fun getRegionName(player: Player): String {
-        val mapName : String? = player.currentRegions.map { it.name }.firstOrNull()
-
-        return when (mapName) {
-            null -> "null"
-            else -> mapName
-        }
+        event.isCancelled = true
     }
 }

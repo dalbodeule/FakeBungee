@@ -5,6 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import space.mori.fakebungee.FakeBungee
 import space.mori.fakebungee.region.event.RegionEnterEvent
@@ -15,7 +16,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 
-object RegionManager : BukkitRunnable() {
+object RegionManager : BukkitRunnable(), Listener {
     val regions: MutableMap<String, Region> = mutableMapOf()
     val playerRegionMap: MutableMap<UUID, Set<Region>> = mutableMapOf()
     private val target: Path = FakeBungee.instance.dataFolder.toPath().resolve("region.json")
@@ -57,6 +58,10 @@ object RegionManager : BukkitRunnable() {
         }
 
         Files.write(target, regions.serializeJsonString().toByteArray())
+    }
+
+    internal fun getRegionName(player: Player): String? {
+        return player.currentRegions.map { it.name }.firstOrNull()
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

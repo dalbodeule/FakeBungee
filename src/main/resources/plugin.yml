@@ -11,6 +11,9 @@ commands:
   fregion:
     usage: "Usage: /<command>"
     permission: fb.region
+  fresource:
+    usage: "Usage: /<command>"
+    permission: fb.resource
 
 permissions:
   fb.ping:
@@ -18,4 +21,7 @@ permissions:
     default: true
   fb.region:
     description: Allows region command
+    default: op
+  fb.resource:
+    description: Allows resource command
     default: op

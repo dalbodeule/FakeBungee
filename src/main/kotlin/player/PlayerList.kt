@@ -16,6 +16,7 @@ import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import space.mori.fakebungee.region.RegionManager
 import space.mori.fakebungee.region.currentRegions
@@ -24,7 +25,7 @@ import space.mori.fakebungee.region.event.RegionExitEvent
 import space.mori.fakebungee.util.serializeJsonString
 import java.lang.reflect.InvocationTargetException
 
-class PlayerList constructor(private val plugin: JavaPlugin) {
+class PlayerList (private val plugin: JavaPlugin) : Listener {
     private val protocolManager: ProtocolManager = ProtocolLibrary.getProtocolManager()
 
     internal fun playerList() {
@@ -46,13 +47,11 @@ class PlayerList constructor(private val plugin: JavaPlugin) {
 
     @EventHandler(priority = EventPriority.NORMAL)
     internal fun onRegionEnter(event: RegionEnterEvent) {
-        plugin.logger.info("player ${event.player} has enter region ${event.region}")
         makePlayerListHF(event.player)
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     internal fun onRegionExit(event: RegionExitEvent) {
-        plugin.logger.info("player ${event.player} has exit region ${event.region}")
         makePlayerListHF(event.player)
     }
 

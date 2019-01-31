@@ -1,4 +1,4 @@
-package space.mori.fakebungee.region
+package space.mori.fakebungee.commands
 
 import com.sk89q.worldedit.regions.CuboidRegion
 import org.bukkit.ChatColor
@@ -6,16 +6,12 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import space.mori.fakebungee.region.Region
+import space.mori.fakebungee.region.RegionManager
+import space.mori.fakebungee.region.currentRegions
 import space.mori.fakebungee.util.bukkit
 import space.mori.fakebungee.util.session
 import space.mori.fakebungee.util.worldEdit
-
-private interface SubCommand {
-    val name: String
-    val parameter: String
-    val description: String
-    fun execute(sender: CommandSender, args: List<String>)
-}
 
 object RegionCommand : CommandExecutor {
     override fun onCommand(
