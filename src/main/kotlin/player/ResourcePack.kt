@@ -42,9 +42,7 @@ class ResourcePack (private val plugin: JavaPlugin) : Listener {
     }
 
     private fun getResourcePack(regionName: String?): ResourcePack {
-        if (regionName == null) {
-            return regionResourcePackMap["default"]!!
-        } else if (regionResourcePackMap[regionName] == null) {
+        if (regionName == null || regionResourcePackMap[regionName] == null) {
             return regionResourcePackMap["default"]!!
         } else {
             return regionResourcePackMap[regionName]!!
@@ -52,28 +50,37 @@ class ResourcePack (private val plugin: JavaPlugin) : Listener {
     }
 
     private fun sendResourcePack(player: Player, onExit: Boolean) {
-        val regionName = RegionManager.getRegionName(player)
-        if (onExit && regionName != null) return
+        plugin.server.scheduler.scheduleSyncDelayedTask(plugin, object : Runnable {
+            override fun run() {
+                val regionName = RegionManager.getRegionName(player)
 
-        val rsPacket = PacketContainer(PacketType.Play.Server.RESOURCE_PACK_SEND)
-        val userRSP = getResourcePack(regionName)
+                plugin.logger.info("onExit: $onExit, regionName: $regionName")
 
-        plugin.logger.info("before: ${playerResourcePackMap[player].toString()}")
-        plugin.logger.info("after: ${userRSP.toString()}")
+                if (onExit && regionName != null) return
 
-        if (
-            playerResourcePackMap[player] == null ||
-            playerResourcePackMap[player]!!.getURL() != userRSP.getURL()
-        ) {
-            rsPacket.strings.write(0, userRSP.getURL()).write(1, userRSP.getHash())
-            playerResourcePackMap[player] = userRSP
+                val userRSP = getResourcePack(regionName)
 
-            try {
-                protocolManager.sendServerPacket(player, rsPacket)
-                plugin.logger.info("send rs packet for ${player.name}")
-            } catch (e: InvocationTargetException) {
-                e.printStackTrace()
+                if (
+                        playerResourcePackMap[player] == null ||
+                        playerResourcePackMap[player]!!.getURL() != userRSP.getURL()
+                ) {
+                    val rsPacket = PacketContainer(PacketType.Play.Server.RESOURCE_PACK_SEND)
+
+
+                    plugin.logger.info("before: ${playerResourcePackMap[player].toString()}")
+                    plugin.logger.info("after: ${userRSP.toString()}")
+
+                    rsPacket.strings.write(0, userRSP.getURL()).write(1, userRSP.getHash())
+                    playerResourcePackMap[player] = userRSP
+
+                    try {
+                        protocolManager.sendServerPacket(player, rsPacket)
+                        plugin.logger.info("send rs packet for ${player.name}")
+                    } catch (e: InvocationTargetException) {
+                        e.printStackTrace()
+                    }
+                }
             }
-        }
+        }, 10L)
     }
 }

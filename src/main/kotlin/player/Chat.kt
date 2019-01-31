@@ -2,6 +2,7 @@ package space.mori.fakebungee.player
 
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -17,12 +18,12 @@ class Chat (private val plugin: JavaPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     internal fun onChat(event: AsyncPlayerChatEvent) {
-        val region : String? = event.player.currentRegions.map { it.name }.firstOrNull()
+        val region : String? = RegionManager.getRegionName(event.player)
 
         if (region == null) {
             event.player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You can't chat.")
         } else {
-            plugin.logger.info("${RegionManager.getRegionName(event.player)}; ${event.player.displayName} : ${event.message}")
+            plugin.logger.info("[$region] ${event.player.displayName} : ${event.message}")
             for (data in RegionManager.playerRegionMap) {
                 if (data.value.first().name == region) {
                     Bukkit.getPlayer(data.key).sendMessage(
