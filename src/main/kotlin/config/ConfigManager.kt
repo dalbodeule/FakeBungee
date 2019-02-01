@@ -2,21 +2,23 @@ package space.mori.fakebungee.config
 
 import org.bukkit.event.Listener
 import space.mori.fakebungee.FakeBungee
-import space.mori.fakebungee.util.parseJsonTo
+import space.mori.fakebungee.config.Config as ConfigType
+import space.mori.fakebungee.util.gson
 import space.mori.fakebungee.util.serializeJsonString
 import java.nio.file.Files
 import java.nio.file.Path
 
 object ConfigManager : Listener {
-    val Config : MutableMap<String, Any> = mutableMapOf()
+    var Config: ConfigType = ConfigType()
 
     private val target: Path = FakeBungee.instance.dataFolder.toPath().resolve("config.json")
 
     internal fun load() {
         if (this.target.toFile().exists()) {
-            Files.readAllBytes(this.target).toString(Charsets.UTF_8).parseJsonTo<Map<String, Any>>()?.let {
-                ConfigManager.Config.putAll(it)
-            }
+            Config = gson.fromJson(
+                Files.readAllBytes(this.target).toString(Charsets.UTF_8),
+                ConfigType::class.java
+            )
         }
     }
 
