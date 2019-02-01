@@ -10,10 +10,11 @@ import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.plugin.java.JavaPlugin
 import space.mori.fakebungee.region.RegionManager
 import space.mori.fakebungee.region.currentRegions
+import space.mori.fakebungee.util.Logger
 
-class Chat (private val plugin: JavaPlugin) : Listener {
+class Chat (private val plugin: JavaPlugin, private val logger: Logger) : Listener {
     internal fun chat() {
-        plugin.logger.info("Chat module initializing... success!")
+       logger.info("Chat module initializing... success!")
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

@@ -11,19 +11,19 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
 import space.mori.fakebungee.region.RegionManager
-import space.mori.fakebungee.region.currentRegions
 import space.mori.fakebungee.region.event.RegionEnterEvent
 import space.mori.fakebungee.region.event.RegionExitEvent
 import space.mori.fakebungee.resourcepack.ResourcePack
 import space.mori.fakebungee.resourcepack.ResourcePackManager.playerResourcePackMap
 import space.mori.fakebungee.resourcepack.ResourcePackManager.regionResourcePackMap
+import space.mori.fakebungee.util.Logger
 import java.lang.reflect.InvocationTargetException
 
-class ResourcePack (private val plugin: JavaPlugin) : Listener {
+class ResourcePack (private val plugin: JavaPlugin, private val logger: Logger) : Listener {
     private val protocolManager: ProtocolManager = ProtocolLibrary.getProtocolManager()
 
     internal fun resourcePack() {
-        plugin.logger.info("ResourcePack module initializing... success!")
+        logger.info("ResourcePack module initializing... success!")
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -54,7 +54,7 @@ class ResourcePack (private val plugin: JavaPlugin) : Listener {
             override fun run() {
                 val regionName = RegionManager.getRegionName(player)
 
-                plugin.logger.info("onExit: $onExit, regionName: $regionName")
+                logger.debug("onExit: $onExit, regionName: $regionName")
 
                 if (onExit && regionName != null) return
 
@@ -67,15 +67,15 @@ class ResourcePack (private val plugin: JavaPlugin) : Listener {
                     val rsPacket = PacketContainer(PacketType.Play.Server.RESOURCE_PACK_SEND)
 
 
-                    plugin.logger.info("before: ${playerResourcePackMap[player].toString()}")
-                    plugin.logger.info("after: ${userRSP.toString()}")
+                    logger.debug("before: ${playerResourcePackMap[player].toString()}")
+                    logger.debug("after: ${userRSP.toString()}")
 
                     rsPacket.strings.write(0, userRSP.getURL()).write(1, userRSP.getHash())
                     playerResourcePackMap[player] = userRSP
 
                     try {
                         protocolManager.sendServerPacket(player, rsPacket)
-                        plugin.logger.info("send rs packet for ${player.name}")
+                        logger.debug("send rs packet for ${player.name}")
                     } catch (e: InvocationTargetException) {
                         e.printStackTrace()
                     }
