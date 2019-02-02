@@ -14,6 +14,9 @@ commands:
   fresource:
     usage: "Usage: /<command>"
     permission: fb.resource
+  fconfig:
+    usage: "Usage: /<command>"
+    permission: fb.config
 
 permissions:
   fb.ping:

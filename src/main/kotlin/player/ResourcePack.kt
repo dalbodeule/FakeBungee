@@ -4,12 +4,14 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
 import com.comphenix.protocol.events.PacketContainer
+import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
+import space.mori.fakebungee.config.ConfigManager
 import space.mori.fakebungee.region.RegionManager
 import space.mori.fakebungee.region.event.RegionEnterEvent
 import space.mori.fakebungee.region.event.RegionExitEvent
@@ -24,61 +26,72 @@ class ResourcePack (private val plugin: JavaPlugin, private val logger: Logger) 
 
     internal fun resourcePack() {
         logger.info("ResourcePack module initializing... success!")
+        if (ConfigManager.Config.resourcePackEnabled) {
+            logger.info("ResourcePack module is ENABLED")
+        } else {
+            logger.info("ResourcePack module is DISABLED")
+        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     internal fun onRegionEnter(event: RegionEnterEvent) {
-        sendResourcePack(event.player, false)
+        if (ConfigManager.Config.resourcePackEnabled) {
+            sendResourcePack(event.player, false)
+        } else return
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     internal fun onRegionExit(event: RegionExitEvent) {
-        sendResourcePack(event.player, true)
+        if (ConfigManager.Config.resourcePackEnabled) {
+            sendResourcePack(event.player, true)
+        } else return
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     internal fun onPlayerJoinEvent(event: PlayerJoinEvent) {
-        sendResourcePack(event.player, false)
+        if (ConfigManager.Config.resourcePackEnabled) {
+            sendResourcePack(event.player, false)
+        } else return
     }
 
     private fun getResourcePack(regionName: String?): ResourcePack {
-        if (regionName == null || regionResourcePackMap[regionName] == null) {
-            return regionResourcePackMap["default"]!!
+        return if (regionName == null || regionResourcePackMap[regionName] == null) {
+            regionResourcePackMap["default"]!!
         } else {
-            return regionResourcePackMap[regionName]!!
+            regionResourcePackMap[regionName]!!
         }
     }
 
     private fun sendResourcePack(player: Player, onExit: Boolean) {
-        plugin.server.scheduler.scheduleSyncDelayedTask(plugin, object : Runnable {
-            override fun run() {
-                val regionName = RegionManager.getRegionName(player)
+        plugin.server.scheduler.scheduleSyncDelayedTask(plugin, Runnable {
+            val regionName = RegionManager.getRegionName(player)
 
-                logger.debug("onExit: $onExit, regionName: $regionName")
+            if (onExit && regionName != null) return@Runnable
 
-                if (onExit && regionName != null) return
+            val userRSP = getResourcePack(regionName)
 
-                val userRSP = getResourcePack(regionName)
-
-                if (
-                        playerResourcePackMap[player] == null ||
-                        playerResourcePackMap[player]!!.getURL() != userRSP.getURL()
-                ) {
-                    val rsPacket = PacketContainer(PacketType.Play.Server.RESOURCE_PACK_SEND)
+            if (
+                playerResourcePackMap[player] == null ||
+                playerResourcePackMap[player]!!.getURL() != userRSP.getURL()
+            ) {
+                val rsPacket = PacketContainer(PacketType.Play.Server.RESOURCE_PACK_SEND)
 
 
-                    logger.debug("before: ${playerResourcePackMap[player].toString()}")
-                    logger.debug("after: ${userRSP.toString()}")
+                logger.debug("before: ${playerResourcePackMap[player].toString()}")
+                logger.debug("after: ${userRSP.toString()}")
 
-                    rsPacket.strings.write(0, userRSP.getURL()).write(1, userRSP.getHash())
-                    playerResourcePackMap[player] = userRSP
+                rsPacket.strings.write(0, userRSP.getURL()).write(1, userRSP.getHash())
+                playerResourcePackMap[player] = userRSP
 
-                    try {
-                        protocolManager.sendServerPacket(player, rsPacket)
-                        logger.debug("send rs packet for ${player.name}")
-                    } catch (e: InvocationTargetException) {
-                        e.printStackTrace()
+                try {
+                    protocolManager.sendServerPacket(player, rsPacket)
+
+                    if ( ConfigManager.Config.resourcePackMessage ) {
+                        player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}A new resource pack has been applied.")
                     }
+                    logger.debug("send rs packet for ${player.name}")
+                } catch (e: InvocationTargetException) {
+                    e.printStackTrace()
                 }
             }
         }, 10L)

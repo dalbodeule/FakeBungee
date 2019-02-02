@@ -14,6 +14,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import space.mori.fakebungee.footer.FooterManager
+import space.mori.fakebungee.header.HeaderManager
 import space.mori.fakebungee.region.RegionManager
 import space.mori.fakebungee.region.event.RegionEnterEvent
 import space.mori.fakebungee.region.event.RegionExitEvent
@@ -51,41 +53,47 @@ class PlayerListHF (private val plugin: JavaPlugin, private val logger: Logger) 
         makePlayerListHF(event.player)
     }
 
-    private fun getHeader(player: Player, area: String): String {
+    private fun getHeader(player: Player, key: String, area: String): String {
+        var header = HeaderManager.headerMap[key].let { it }.let { HeaderManager.headerMap["default"]!! }
+
         return ChatColor.translateAlternateColorCodes(
-            '&', "&d{player}, &6{area}, Test Header".replace("{player}", player.displayName).replace("{area}", area)
+            '&', header
+                .replace("{player}", player.displayName)
+                .replace("{area}", area)
         )
     }
 
-    private fun getFooter(player: Player, area: String): String {
+    private fun getFooter(player: Player, key: String, area: String): String {
+        var footer = FooterManager.footerMap[key].let { it }.let { FooterManager.footerMap["default"]!! }
+
         return ChatColor.translateAlternateColorCodes(
-                '&', "&6Test Footer".replace("{player}", player.displayName).replace("{area}", area)
+            '&', footer
+                .replace("{player}", player.displayName)
+                .replace("{area}", area)
         )
     }
 
     private fun makePlayerListHF(player: Player) {
-        plugin.server.scheduler.scheduleSyncDelayedTask(plugin, object : Runnable {
-            override fun run() {
-                val hfPacket = PacketContainer(PacketType.Play.Server.PLAYER_LIST_HEADER_FOOTER)
-                val region: String = RegionManager.getRegionName(player)?.let { it } ?: "null"
+        plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
+            val hfPacket = PacketContainer(PacketType.Play.Server.PLAYER_LIST_HEADER_FOOTER)
+            val region: String = RegionManager.getRegionName(player)?.let { it } ?: "null"
 
-                hfPacket.chatComponents.write(
-                        0, WrappedChatComponent.fromText(
-                        getHeader(player, region)
-                    )
+            hfPacket.chatComponents.write(
+                    0, WrappedChatComponent.fromText(
+                    getHeader(player, "test", region)
                 )
-                hfPacket.chatComponents.write(
-                        1, WrappedChatComponent.fromText(
-                        getFooter(player, region)
-                    )
+            )
+            hfPacket.chatComponents.write(
+                    1, WrappedChatComponent.fromText(
+                    getFooter(player, "test", region)
                 )
+            )
 
-                try {
-                    protocolManager.sendServerPacket(player, hfPacket)
-                    logger.debug("send hf packet for ${player.name}")
-                } catch (e: InvocationTargetException) {
-                    e.printStackTrace()
-                }
+            try {
+                protocolManager.sendServerPacket(player, hfPacket)
+                logger.debug("send hf packet for ${player.name}")
+            } catch (e: InvocationTargetException) {
+                e.printStackTrace()
             }
         }, 10L)
     }

@@ -1,11 +1,14 @@
 package space.mori.fakebungee
 
 import org.bukkit.plugin.java.JavaPlugin
+import space.mori.fakebungee.commands.ConfigCommand
 
 import space.mori.fakebungee.commands.Ping
 import space.mori.fakebungee.commands.RegionCommand
 import space.mori.fakebungee.commands.ResourceCommand
 import space.mori.fakebungee.config.ConfigManager
+import space.mori.fakebungee.footer.FooterManager
+import space.mori.fakebungee.header.HeaderManager
 import space.mori.fakebungee.region.RegionManager
 import space.mori.fakebungee.player.Chat
 import space.mori.fakebungee.player.PlayerListHF
@@ -30,13 +33,23 @@ class FakeBungee : JavaPlugin() {
         getCommand("ping").executor = Ping
         getCommand("fregion").executor = RegionCommand
         getCommand("fresource").executor = ResourceCommand
+        getCommand("fconfig").executor = ConfigCommand
 
+        // RegionManager
         RegionManager.load()
         RegionManager.runTaskTimer(this, 0, 20)
 
+        // ResourcePackManager
         RPM.load()
 
+        // ConfigManager
         ConfigManager.load()
+
+        // HeaderManager
+        HeaderManager.load()
+
+        // FooterManager
+        FooterManager.load()
 
         chat.chat()
         playerListHF.playerList()
@@ -57,9 +70,20 @@ class FakeBungee : JavaPlugin() {
     }
 
     override fun onDisable() {
+        // RegionManager
         RegionManager.save()
+
+        // ResourcePackManager
         RPM.save()
+
+        // ConfigManager
         ConfigManager.save()
+
+        // HeaderManager
+        HeaderManager.save()
+
+        // FooterManager
+        FooterManager.save()
 
         logger.info("${this.description.name} is unloaded")
     }

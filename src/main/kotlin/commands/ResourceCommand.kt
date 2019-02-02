@@ -1,14 +1,11 @@
 package space.mori.fakebungee.commands
 
-import com.sk89q.worldedit.regions.CuboidRegion
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
-import space.mori.fakebungee.region.RegionManager
 import space.mori.fakebungee.resourcepack.ResourcePack
-import space.mori.fakebungee.resourcepack.ResourcePackManager
+import space.mori.fakebungee.resourcepack.ResourcePackManager as RPM
 
 object ResourceCommand : CommandExecutor {
     override fun onCommand(
@@ -42,67 +39,72 @@ object ResourceCommand : CommandExecutor {
         override val name = "create"
         override val parameter: String = "create <url> <hash>"
         override val description: String =
-            "Create a region which named the supplied name parameter based on the selection of WorldEdit"
+            "Create a resource which named the supplied name parameter based"
 
         override fun execute(sender: CommandSender, args: List<String>) {
             if (args.isEmpty()) {
-                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the name of region, spaces are not allowed.")
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the parameters spaces are not allowed.")
                 return
             }
 
             val name = args[0]
 
-            if (name !in RegionManager.regions) {
-                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Region $name is not exists, Please use another name.")
+            if (name in RPM.regionResourcePackMap) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Resource $name is exists, Please use another name.")
                 return
             }
 
-            ResourcePackManager.regionResourcePackMap[name] = ResourcePack(args[1], args[2])
-            ResourcePackManager.save()
+            RPM.regionResourcePackMap[name] = ResourcePack(args[1], args[2])
+            RPM.save()
 
-            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Region `$name` has successfully added.")
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Resource `$name` has successfully added.")
         }
     }, object : SubCommand {
         override val name = "list"
         override val parameter: String = "list"
-        override val description: String = "Show the list of created regions"
+        override val description: String = "Show the list of created resources"
 
         override fun execute(sender: CommandSender, args: List<String>) {
-            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The regions of server:")
-            sender.sendMessage(ResourcePackManager.regionResourcePackMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray())
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The resources of server:")
+            sender.sendMessage(RPM.regionResourcePackMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray())
         }
     }, object : SubCommand {
         override val name = "delete"
         override val parameter: String = "delete <name>"
-        override val description: String = "Delete a region which named the supplied name parameter based"
+        override val description: String = "Delete a resource which named the supplied name parameter based"
 
         override fun execute(sender: CommandSender, args: List<String>) {
             if (args.isEmpty()) {
-                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the name of region, spaces are not allowed.")
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the name of resource, spaces are not allowed.")
                 return
             }
 
             val name = args[0]
 
-            if (name !in ResourcePackManager.regionResourcePackMap) {
-                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Region $name is not exists, Please use another name.")
+            if (name == "default") {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You can not delete the default Resource.")
                 return
             }
 
-            ResourcePackManager.regionResourcePackMap.remove(name)
-            ResourcePackManager.save()
+            if (name !in RPM.regionResourcePackMap) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Resource $name is not exists, Please use another name.")
+                return
+            }
 
-            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Region `$name` has successfully deleted.")
+            RPM.regionResourcePackMap.remove(name)
+            RPM.save()
+
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Resource `$name` has successfully deleted.")
         }
     }, object : SubCommand {
         override val name = "reload"
         override val parameter: String = "reload"
-        override val description: String = "Reload the Region settings."
+        override val description: String = "Reload the Resource settings."
 
         override fun execute(sender: CommandSender, args: List<String>) {
-            RegionManager.load()
+            RPM.load()
 
-            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Region settings have been successfully reloaded.")
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Resource settings have been successfully reloaded.")
         }
     }).associateBy { it.name }
 }

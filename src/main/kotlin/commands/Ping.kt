@@ -1,5 +1,6 @@
 package space.mori.fakebungee.commands
 
+import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -13,10 +14,10 @@ object Ping: CommandExecutor {
         } else {
             if (sender.hasPermission("fb.ping")) {
                 sender.sendMessage(
-                    "Pong ${sender.displayName}, you'r ping is ${Ping().get(sender)}!"
+                    "${ChatColor.GREEN}[!] ${ChatColor.WHITE}Pong ${sender.displayName}${ChatColor.WHITE}, you'r ping is ${Ping().get(sender)}!"
                 )
             } else {
-                sender.sendMessage("You don't have permissions")
+                sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}You don't have permissions")
             }
         }
         return true
