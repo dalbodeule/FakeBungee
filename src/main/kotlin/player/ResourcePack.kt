@@ -15,9 +15,10 @@ import space.mori.fakebungee.config.ConfigManager
 import space.mori.fakebungee.region.RegionManager
 import space.mori.fakebungee.region.event.RegionEnterEvent
 import space.mori.fakebungee.region.event.RegionExitEvent
+import space.mori.fakebungee.region.resourcepack
 import space.mori.fakebungee.resourcepack.ResourcePack
 import space.mori.fakebungee.resourcepack.ResourcePackManager.playerResourcePackMap
-import space.mori.fakebungee.resourcepack.ResourcePackManager.regionResourcePackMap
+import space.mori.fakebungee.resourcepack.ResourcePackManager.resourcePackMap
 import space.mori.fakebungee.util.Logger
 import java.lang.reflect.InvocationTargetException
 
@@ -48,21 +49,22 @@ class ResourcePack (private val plugin: JavaPlugin, private val logger: Logger) 
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    internal fun onPlayerJoinEvent(event: PlayerJoinEvent) {
+    internal fun onPlayerJoin(event: PlayerJoinEvent) {
         if (ConfigManager.Config.resourcePackEnabled) {
-            sendResourcePack(event.player, false)
+            sendResourcePack(event.player, true)
         } else return
     }
 
     private fun getResourcePack(regionName: String?): ResourcePack {
-        return if (regionName == null || regionResourcePackMap[regionName] == null) {
-            regionResourcePackMap["default"]!!
-        } else {
-            regionResourcePackMap[regionName]!!
+        val resource = RegionManager.regions[regionName].let { region ->
+            return@let region?.resourcepack ?: "default"
         }
+
+        logger.debug("region $regionName's resource pack is $resource")
+        return resourcePackMap[resource]!!
     }
 
-    private fun sendResourcePack(player: Player, onExit: Boolean) {
+    internal fun sendResourcePack(player: Player, onExit: Boolean) {
         plugin.server.scheduler.scheduleSyncDelayedTask(plugin, Runnable {
             val regionName = RegionManager.getRegionName(player)
 
@@ -76,24 +78,25 @@ class ResourcePack (private val plugin: JavaPlugin, private val logger: Logger) 
             ) {
                 val rsPacket = PacketContainer(PacketType.Play.Server.RESOURCE_PACK_SEND)
 
-
-                logger.debug("before: ${playerResourcePackMap[player].toString()}")
-                logger.debug("after: ${userRSP.toString()}")
+                logger.debug("region: $regionName, resource: ${userRSP.toString()}")
 
                 rsPacket.strings.write(0, userRSP.getURL()).write(1, userRSP.getHash())
                 playerResourcePackMap[player] = userRSP
 
-                try {
-                    protocolManager.sendServerPacket(player, rsPacket)
+                player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}After a while the new resource pack will be applied.")
+                plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
+                    try {
+                        protocolManager.sendServerPacket(player, rsPacket)
 
-                    if ( ConfigManager.Config.resourcePackMessage ) {
-                        player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}A new resource pack has been applied.")
+                        if (ConfigManager.Config.resourcePackMessage) {
+                            player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}A new resource pack has been applied.")
+                        }
+                        logger.debug("send rs packet for ${player.name}")
+                    } catch (e: InvocationTargetException) {
+                        e.printStackTrace()
                     }
-                    logger.debug("send rs packet for ${player.name}")
-                } catch (e: InvocationTargetException) {
-                    e.printStackTrace()
-                }
+                }, 20L*5)
             }
-        }, 10L)
+        }, 20L)
     }
 }

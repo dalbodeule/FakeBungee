@@ -13,7 +13,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 object ResourcePackManager : Listener {
-    val regionResourcePackMap : MutableMap<String, ResourcePackType> = mutableMapOf()
+    val resourcePackMap : MutableMap<String, ResourcePackType> = mutableMapOf()
     val playerResourcePackMap : MutableMap<Player, ResourcePackType> = mutableMapOf()
 
     private val target: Path = FakeBungee.instance.dataFolder.toPath().resolve("resourcepack.json")
@@ -21,12 +21,12 @@ object ResourcePackManager : Listener {
     internal fun load() {
         if (this.target.toFile().exists()) {
             Files.readAllBytes(this.target).toString(Charsets.UTF_8).parseJsonTo<Map<String, ResourcePackType>>()?.let {
-                regionResourcePackMap.putAll(it)
+                resourcePackMap.putAll(it)
             }
         }
 
-        if (regionResourcePackMap["default"] == null) {
-            regionResourcePackMap["default"] = ResourcePackType(
+        if (resourcePackMap["default"] == null) {
+            resourcePackMap["default"] = ResourcePackType(
                 "https://download.nodecdn.net/containers/nodecraft/minepack/64b9bee7569109cdfe51aa433352d3d4.zip",
                 "d448c8c7e4cc57fa6e786f7811204a1c99bdc64e"
             )
@@ -41,7 +41,7 @@ object ResourcePackManager : Listener {
             Files.createFile(this.target)
         }
 
-        Files.write(this.target, regionResourcePackMap.serializeJsonString().toByteArray())
+        Files.write(this.target, resourcePackMap.serializeJsonString().toByteArray())
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

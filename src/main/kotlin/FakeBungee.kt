@@ -1,11 +1,8 @@
 package space.mori.fakebungee
 
 import org.bukkit.plugin.java.JavaPlugin
-import space.mori.fakebungee.commands.ConfigCommand
 
-import space.mori.fakebungee.commands.Ping
-import space.mori.fakebungee.commands.RegionCommand
-import space.mori.fakebungee.commands.ResourceCommand
+import space.mori.fakebungee.commands.*
 import space.mori.fakebungee.config.ConfigManager
 import space.mori.fakebungee.footer.FooterManager
 import space.mori.fakebungee.header.HeaderManager
@@ -14,6 +11,7 @@ import space.mori.fakebungee.player.Chat
 import space.mori.fakebungee.player.PlayerListHF
 import space.mori.fakebungee.player.PlayerListUL
 import space.mori.fakebungee.player.ResourcePack
+import space.mori.fakebungee.regiondata.RegionDataManager as RDM
 import space.mori.fakebungee.util.Logger
 import space.mori.fakebungee.resourcepack.ResourcePackManager as RPM
 
@@ -34,10 +32,16 @@ class FakeBungee : JavaPlugin() {
         getCommand("fregion").executor = RegionCommand
         getCommand("fresource").executor = ResourceCommand
         getCommand("fconfig").executor = ConfigCommand
+        getCommand("fheader").executor = HeaderCommand
+        getCommand("ffooter").executor = FooterCommand
+        getCommand("resource").executor = ResourceApplyCommand(this, logger)
 
         // RegionManager
         RegionManager.load()
         RegionManager.runTaskTimer(this, 0, 20)
+
+        // RegionDataManager
+        RDM.load()
 
         // ResourcePackManager
         RPM.load()
@@ -72,6 +76,9 @@ class FakeBungee : JavaPlugin() {
     override fun onDisable() {
         // RegionManager
         RegionManager.save()
+
+        // RegionDataManager
+        RDM.save()
 
         // ResourcePackManager
         RPM.save()

@@ -27,37 +27,30 @@ import space.mori.fakebungee.util.Ping
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 
-
-
 class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) : Listener {
     private val protocolManager: ProtocolManager = ProtocolLibrary.getProtocolManager()
 
     internal fun playerList() {
+        val isCitizensActivated = plugin.server.pluginManager.isPluginEnabled("Citizens")
         this.protocolManager.addPacketListener(object :
             PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO) {
             @Override
             override fun onPacketSending(event: PacketEvent) {
                 when(event.packet.playerInfoAction.read(0)) {
-                    EnumWrappers.PlayerInfoAction.ADD_PLAYER -> event.isCancelled = true
+                    EnumWrappers.PlayerInfoAction.ADD_PLAYER -> {
+                        if (isCitizensActivated) {
+                            Citizens(logger).filterCitizensNPC(event)
+                        }
+                        event.isCancelled = true
+                    }
                     else -> return
                 }
             }
         })
-
-        this.protocolManager.addPacketListener(object :
-            PacketAdapter(plugin, ListenerPriority.HIGH, PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
-            @Override
-            override fun onPacketSending(event: PacketEvent) {
-                val uuid = event.packet.uuiDs.read(0)
-
-                if (plugin.server.getPlayer(uuid) == event.player) {
-                    event.isCancelled = true
-                } else {
-                    return
-                }
-            }
-        })
         logger.info("PlayerListUL module initializing... success!")
+        if (isCitizensActivated) {
+            logger.info("Citizens plugin is activated!")
+        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -77,6 +70,7 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
 
     @EventHandler(priority = EventPriority.NORMAL)
     internal fun onPlayerJoin(event: PlayerJoinEvent) {
+        makePlayerList(event.player)
         addPlayerList(event.player)
         plugin.server.scheduler.scheduleSyncDelayedTask(plugin, { renderPlayers(event.player) }, 20L)
     }

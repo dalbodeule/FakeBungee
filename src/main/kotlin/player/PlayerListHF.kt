@@ -19,6 +19,8 @@ import space.mori.fakebungee.header.HeaderManager
 import space.mori.fakebungee.region.RegionManager
 import space.mori.fakebungee.region.event.RegionEnterEvent
 import space.mori.fakebungee.region.event.RegionExitEvent
+import space.mori.fakebungee.region.footer
+import space.mori.fakebungee.region.header
 import space.mori.fakebungee.util.Logger
 import java.lang.reflect.InvocationTargetException
 
@@ -53,39 +55,47 @@ class PlayerListHF (private val plugin: JavaPlugin, private val logger: Logger) 
         makePlayerListHF(event.player)
     }
 
-    private fun getHeader(player: Player, key: String, area: String): String {
-        var header = HeaderManager.headerMap[key].let { it }.let { HeaderManager.headerMap["default"]!! }
+    private fun getHeader(player: Player, regionName: String): String {
+        val header = RegionManager.regions[regionName].let { region ->
+            return@let region?.header ?: "default"
+        }
+
+        logger.debug("region $regionName's header is $header")
 
         return ChatColor.translateAlternateColorCodes(
-            '&', header
+            '&', HeaderManager.headerMap[header]!!
                 .replace("{player}", player.displayName)
-                .replace("{area}", area)
+                .replace("{area}", regionName)
         )
     }
 
-    private fun getFooter(player: Player, key: String, area: String): String {
-        var footer = FooterManager.footerMap[key].let { it }.let { FooterManager.footerMap["default"]!! }
+    private fun getFooter(player: Player, regionName: String): String {
+        val footer = RegionManager.regions[regionName].let { region ->
+            return@let region?.footer ?: "default"
+        }
+
+        logger.debug("region $regionName's footer is $footer")
 
         return ChatColor.translateAlternateColorCodes(
-            '&', footer
+            '&', FooterManager.footerMap[footer]!!
                 .replace("{player}", player.displayName)
-                .replace("{area}", area)
+                .replace("{area}", regionName)
         )
     }
 
     private fun makePlayerListHF(player: Player) {
         plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
             val hfPacket = PacketContainer(PacketType.Play.Server.PLAYER_LIST_HEADER_FOOTER)
-            val region: String = RegionManager.getRegionName(player)?.let { it } ?: "null"
+            val regionName: String = RegionManager.getRegionName(player)?.let { it } ?: "null"
 
             hfPacket.chatComponents.write(
                     0, WrappedChatComponent.fromText(
-                    getHeader(player, "test", region)
+                    getHeader(player, regionName)
                 )
             )
             hfPacket.chatComponents.write(
                     1, WrappedChatComponent.fromText(
-                    getFooter(player, "test", region)
+                    getFooter(player, regionName)
                 )
             )
 

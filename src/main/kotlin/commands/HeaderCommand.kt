@@ -4,19 +4,18 @@ import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
-import space.mori.fakebungee.resourcepack.ResourcePack
-import space.mori.fakebungee.resourcepack.ResourcePackManager as RPM
+import space.mori.fakebungee.header.HeaderManager
 
-object ResourceCommand : CommandExecutor {
+object HeaderCommand : CommandExecutor {
     override fun onCommand(
         sender: CommandSender, command: Command, label: String, args: Array<out String>
     ): Boolean {
-        if (!sender.hasPermission("fb.fresource")) {
+        if (!sender.hasPermission("fb.fheader")) {
             return true
         }
 
         if (args.isEmpty() || args[0] == "help") {
-            sender.sendMessage(" :: ${ChatColor.GOLD}Resource Command")
+            sender.sendMessage(" :: ${ChatColor.GOLD}Header Command")
             for (subCommand in subCommands.values) {
                 sender.sendMessage(" ${ChatColor.GREEN}* ${ChatColor.WHITE}/$label ${subCommand.parameter} ${ChatColor.DARK_GRAY}- ${ChatColor.GRAY}${subCommand.description}")
             }
@@ -37,74 +36,74 @@ object ResourceCommand : CommandExecutor {
 
     private val subCommands = listOf(object : SubCommand {
         override val name = "create"
-        override val parameter: String = "create <asset's name> <url> <hash>"
+        override val parameter: String = "create <asset's name> <content(allow spaces)>"
         override val description: String =
-            "Create a resource which named the supplied name parameter based"
+            "Create a header which named the supplied name parameter based"
 
         override fun execute(sender: CommandSender, args: List<String>) {
             if (args.isEmpty()) {
-                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the parameters spaces are not allowed.")
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the parameters spaces are not allowed without content.")
                 return
             }
 
             val name = args[0]
 
-            if (name in RPM.resourcePackMap) {
-                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Resource $name is exists, Please use another name.")
+            if (name in HeaderManager.headerMap) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Header $name is exists, Please use another name.")
                 return
             }
 
-            RPM.resourcePackMap[name] = ResourcePack(args[1], args[2].toLowerCase())
-            RPM.save()
+            HeaderManager.headerMap[name] = args.drop(1).joinToString("")
+            HeaderManager.save()
 
-            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Resource `$name` has successfully added.")
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Header `$name` has successfully added.")
         }
     }, object : SubCommand {
         override val name = "list"
         override val parameter: String = "list"
-        override val description: String = "Show the list of created resources"
+        override val description: String = "Show the list of created Headers"
 
         override fun execute(sender: CommandSender, args: List<String>) {
-            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The resources of server:")
-            sender.sendMessage(RPM.resourcePackMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray())
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The Headers of server:")
+            sender.sendMessage(HeaderManager.headerMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray())
         }
     }, object : SubCommand {
         override val name = "delete"
         override val parameter: String = "delete <asset's name>"
-        override val description: String = "Delete a resource which named the supplied name parameter based"
+        override val description: String = "Delete a Header which named the supplied name parameter based"
 
         override fun execute(sender: CommandSender, args: List<String>) {
             if (args.isEmpty()) {
-                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the name of resource, spaces are not allowed.")
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the name of Header, spaces are not allowed.")
                 return
             }
 
             val name = args[0]
 
             if (name == "default") {
-                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You can not delete the default Resource.")
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You can not delete the default Header.")
                 return
             }
 
-            if (name !in RPM.resourcePackMap) {
-                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Resource $name is not exists, Please use another name.")
+            if (name !in HeaderManager.headerMap) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Header $name is not exists, Please use another name.")
                 return
             }
 
-            RPM.resourcePackMap.remove(name)
-            RPM.save()
+            HeaderManager.headerMap.remove(name)
+            HeaderManager.save()
 
-            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Resource `$name` has successfully deleted.")
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Header `$name` has successfully deleted.")
         }
     }, object : SubCommand {
         override val name = "reload"
         override val parameter: String = "reload"
-        override val description: String = "Reload the Resource settings."
+        override val description: String = "Reload the Header settings."
 
         override fun execute(sender: CommandSender, args: List<String>) {
-            RPM.load()
+            HeaderManager.load()
 
-            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Resource settings have been successfully reloaded.")
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Header settings have been successfully reloaded.")
         }
     }).associateBy { it.name }
 }

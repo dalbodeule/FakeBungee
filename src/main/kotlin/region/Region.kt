@@ -3,6 +3,8 @@ package space.mori.fakebungee.region
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import space.mori.fakebungee.regiondata.RegionData
+import space.mori.fakebungee.regiondata.RegionDataManager
 
 class Region(
     val name: String, private val min: Vector, private val max: Vector, private val worldName: String
@@ -25,3 +27,40 @@ class Region(
     operator fun contains(player: Player): Boolean =
         player.world.name == worldName && player.location.toVector().isInAABB(min, max)
 }
+
+var Region.header: String
+    get() = RegionDataManager.RegionData[this.name]?.UserListHeader.let { header -> return header ?: "default" }
+    set(value) {
+        RegionDataManager.RegionData[this.name].let { region ->
+            if (region != null) {
+                region.UserListHeader = value
+            } else {
+                RegionDataManager.RegionData[this.name] = RegionData("default", value, "default")
+            }
+        }
+    }
+
+var Region.footer: String
+    get() = RegionDataManager.RegionData[this.name]?.UserListFooter.let { footer -> return footer ?: "default" }
+    set(value) {
+        RegionDataManager.RegionData[this.name].let { region ->
+            if (region != null) {
+                region.UserListFooter = value
+            } else {
+                RegionDataManager.RegionData[this.name] = RegionData("default", "default", value)
+            }
+        }
+    }
+
+
+var Region.resourcepack: String
+    get() = RegionDataManager.RegionData[this.name]?.ResourcePack.let { resourcepack -> return resourcepack ?: "default"}
+    set(value) {
+        RegionDataManager.RegionData[this.name].let { region ->
+            if (region != null) {
+                region.ResourcePack = value
+            } else {
+                RegionDataManager.RegionData[this.name] = RegionData(value, "default", "default")
+            }
+        }
+    }

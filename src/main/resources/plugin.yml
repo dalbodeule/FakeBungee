@@ -2,6 +2,8 @@ name: FakeBungee
 version: @version@
 main: space.mori.fakebungee.FakeBungee
 depend: [kotlinbukkit, ProtocolLib, WorldEdit]
+softdepend:
+  - citizens
 authors: [small_sunshine, ranolp]
 
 commands:
@@ -10,21 +12,39 @@ commands:
     permission: fb.ping
   fregion:
     usage: "Usage: /<command>"
-    permission: fb.region
+    permission: fb.fregion
   fresource:
     usage: "Usage: /<command>"
-    permission: fb.resource
+    permission: fb.fresource
   fconfig:
     usage: "Usage: /<command>"
-    permission: fb.config
+    permission: fb.fconfig
+  fheader:
+    usage: "Usage: /<command>"
+    permission: fb.fheader
+  ffooter:
+    usage: "Usage: /<command>"
+    permission: fb.ffooter
+  resource:
+    usage: "Usage: /<command>"
+    permission: fb.resource
 
 permissions:
   fb.ping:
     description: Allows ping command
     default: true
-  fb.region:
+  fb.fregion:
     description: Allows region command
+    default: op
+  fb.fresource:
+    description: Allows resource command
+    default: op
+  fb.fheader:
+    description: Allows header command
+    default: op
+  fb.ffooter:
+    description: Allows footer command
     default: op
   fb.resource:
     description: Allows resource command
-    default: op
+    default: true
