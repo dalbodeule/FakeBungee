@@ -24,6 +24,10 @@
    - 단 WorldEdit는 6.x 만 지원, 7.x는 지원예정
  - ProtocolLib
    - https://github.com/dmulloy2/ProtocolLib/
+   
+## SoftDepends
+ - Citizens
+  - Citizens과 FakeBungee를 같이 사용할 경우 Citizens이 전송하는 데이터를 FakeBungee가 막는 이슈를 해결
  
 ## License
 
