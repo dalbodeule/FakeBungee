@@ -50,6 +50,8 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
         logger.info("PlayerListUL module initializing... success!")
         if (isCitizensActivated) {
             logger.info("Citizens plugin is activated!")
+        } else {
+            logger.info("Citizens plugin is deactivated!")
         }
     }
 

@@ -14,7 +14,10 @@
 
  - /ping FakeBungee 작동확인
  - /fregion \<subcommand\> \<region name\> Region에 옵션 적용
- - /fresource \<subcommand\> \<resource name\> Resource에 옵션 적용
+ - /fresource \<subcommand\> \<resource name\> Resource에 에셋 설정
+ - /fheader \<suubcommand\> \<header name\> Header에 에셋 설정
+ - /ffooter \<subcommand\< \<footer name\> Footer에 에셋 설정
+ - /resource 리소스팩 다운로드 재시도
  
 ## Depends
  - KotlinBukkit 
