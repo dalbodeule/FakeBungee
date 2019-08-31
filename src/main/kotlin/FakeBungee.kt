@@ -27,14 +27,14 @@ class FakeBungee : JavaPlugin() {
         val playerListUL = PlayerListUL(this, logger)
         val rpm = ResourcePack(this, logger)
 
-        FakeBungee.instance = this
-        getCommand("ping").executor = Ping
-        getCommand("fregion").executor = RegionCommand
-        getCommand("fresource").executor = ResourceCommand
-        getCommand("fconfig").executor = ConfigCommand
-        getCommand("fheader").executor = HeaderCommand
-        getCommand("ffooter").executor = FooterCommand
-        getCommand("resource").executor = ResourceApplyCommand(this, logger)
+        instance = this
+        getCommand("ping")!!.setExecutor(Ping)
+        getCommand("fregion")!!.setExecutor(RegionCommand)
+        getCommand("fresource")!!.setExecutor(ResourceCommand)
+        getCommand("fconfig")!!.setExecutor(ConfigCommand)
+        getCommand("fheader")!!.setExecutor(HeaderCommand)
+        getCommand("ffooter")!!.setExecutor(FooterCommand)
+        getCommand("resource")!!.setExecutor(ResourceApplyCommand(this, logger))
 
         // RegionManager
         RegionManager.load()

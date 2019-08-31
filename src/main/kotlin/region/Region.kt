@@ -12,7 +12,7 @@ class Region(
     companion object {
         @JvmStatic
         fun fromLocation(name: String, loc1: Location, loc2: Location): Region {
-            if (loc1.world.name != loc2.world.name) {
+            if (loc1.world!!.name != loc2.world!!.name) {
                 throw IllegalArgumentException("The locations' world must be same, but actual value is not: $loc1, $loc2")
             }
 
@@ -20,7 +20,7 @@ class Region(
             val max = Vector(maxOf(loc1.x, loc2.x), maxOf(loc1.y, loc2.y), maxOf(loc1.z, loc2.z))
             val world = loc1.world
 
-            return Region(name, min, max, world.name)
+            return Region(name, min, max, world!!.name)
         }
     }
 
