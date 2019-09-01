@@ -8,6 +8,7 @@
  - [x] Region을 기준으로 채팅채널 분리
  - [x] Region을 기준으로 유저리스트 분리
  - [x] Region을 기준으로 적용되는 리소스팩 다르게 적용
+ - [ ] Commend Alias 제작
  
 ## COMMAND
 
