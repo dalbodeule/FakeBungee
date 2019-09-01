@@ -8,7 +8,6 @@
  - [x] Region을 기준으로 채팅채널 분리
  - [x] Region을 기준으로 유저리스트 분리
  - [x] Region을 기준으로 적용되는 리소스팩 다르게 적용
- - [ ] Region을 기준으로 인벤토리 레이아웃 적용(적용할지 안할지도 결정가능)
  
 ## COMMAND
 
@@ -20,16 +19,21 @@
  - /resource 리소스팩 다운로드 재시도
  
 ## Depends
+ - bukkit (spigot/paper)
+    - recommend ver 1.14.x
  - KotlinBukkit 
    - https://github.com/finalchild/kotlinbukkit
+   - recommend ver 1.0.0-rc.7
  - WorldEdit
    - https://github.com/EngineHub/WorldEdit
-   - 단 WorldEdit는 6.x 만 지원, 7.x는 지원예정
+   - recommend ver 7.x
  - ProtocolLib
    - https://github.com/dmulloy2/ProtocolLib/
+   - recommend ver 4.5.0
    
 ## SoftDepends
  - Citizens
+   - recommend ver 2.0.25
    - Citizens과 FakeBungee를 같이 사용할 경우 Citizens이 전송하는 데이터를 FakeBungee가 막는 이슈를 해결
  
 ## License
