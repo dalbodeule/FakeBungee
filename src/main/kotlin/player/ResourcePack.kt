@@ -64,7 +64,7 @@ class ResourcePack (private val plugin: JavaPlugin, private val logger: Logger) 
         return resourcePackMap[resource]!!
     }
 
-    internal fun sendResourcePack(player: Player, onExit: Boolean) {
+    private fun sendResourcePack(player: Player, onExit: Boolean) {
         plugin.server.scheduler.scheduleSyncDelayedTask(plugin, Runnable {
             val regionName = RegionManager.getRegionName(player)
 

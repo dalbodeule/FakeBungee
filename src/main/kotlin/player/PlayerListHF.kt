@@ -60,13 +60,18 @@ class PlayerListHF (private val plugin: JavaPlugin, private val logger: Logger) 
             return@let region?.header ?: "default"
         }
 
-        logger.debug("region $regionName's header is $header")
+        val content = HeaderManager.headerMap[header]?.let {
+            return@let ChatColor.translateAlternateColorCodes('&',
+                    it.replace("{player}", player.displayName)
+                            .replace("{area}", regionName)
+            )
+        } ?: ""
 
-        return ChatColor.translateAlternateColorCodes(
-            '&', HeaderManager.headerMap[header]!!
-                .replace("{player}", player.displayName)
-                .replace("{area}", regionName)
-        )
+        logger.debug("region $regionName's header is $header")
+        content.let { it.split("\n").map{ line -> logger.debug(line) } }
+
+
+        return content.replace("{player}", player.displayName).replace("{area}", regionName)
     }
 
     private fun getFooter(player: Player, regionName: String): String {
@@ -74,13 +79,17 @@ class PlayerListHF (private val plugin: JavaPlugin, private val logger: Logger) 
             return@let region?.footer ?: "default"
         }
 
-        logger.debug("region $regionName's footer is $footer")
-
-        return ChatColor.translateAlternateColorCodes(
-            '&', FooterManager.footerMap[footer]!!
-                .replace("{player}", player.displayName)
+        val content = FooterManager.footerMap[footer]?.let {
+            return@let ChatColor.translateAlternateColorCodes('&',
+                it.replace("{player}", player.displayName)
                 .replace("{area}", regionName)
-        )
+            )
+        } ?: ""
+
+        logger.debug("region $regionName's footer is $footer")
+        content.let { it.split("\n").map{ line -> logger.debug(line) } }
+
+        return content
     }
 
     private fun makePlayerListHF(player: Player) {

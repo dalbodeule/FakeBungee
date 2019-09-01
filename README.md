@@ -9,6 +9,8 @@
  - [x] Region을 기준으로 유저리스트 분리
  - [x] Region을 기준으로 적용되는 리소스팩 다르게 적용
  - [ ] Commend Alias 제작
+ - [x] Header/Footer NewLine 적용
+ - [x] Header/Footer null 일 때 대처
  
 ## COMMAND
 

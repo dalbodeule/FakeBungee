@@ -102,7 +102,7 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
         return packet
     }
 
-    private fun getPlayerEntityDestoryPacket(player: Player): PacketContainer {
+    private fun getPlayerEntityDestroyPacket(player: Player): PacketContainer {
         val packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY)
         val content = IntArray(1)
         content[0] = player.entityId
@@ -211,7 +211,7 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
             val packetSELF = protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO)
             packetSELF.playerInfoAction.write(0, EnumWrappers.PlayerInfoAction.REMOVE_PLAYER)
             packetSELF.playerInfoDataLists.write(0, playerInfoDataSelf)
-            val packetED = getPlayerEntityDestoryPacket(player)
+            val packetED = getPlayerEntityDestroyPacket(player)
 
             if (region == null) {
                 for (data in plugin.server.onlinePlayers) {
@@ -225,7 +225,7 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
                         protocolManager.sendServerPacket(data, packetED, true)
                         logger.debug("send ENTITY_DESTROY packet for `${data.name}` with region `$pastRegionName` and destory player is `${player.name}`")
 
-                        protocolManager.sendServerPacket(player, getPlayerEntityDestoryPacket(data), true)
+                        protocolManager.sendServerPacket(player, getPlayerEntityDestroyPacket(data), true)
                         logger.debug("send ENTITY_DESTROY packet for `${player.name}` with region `$pastRegionName` and destory player is `${data.name}`")
 
                     }
@@ -241,7 +241,7 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
                         protocolManager.sendServerPacket(data, packetED, true)
                         logger.debug("send ENTITY_DESTROY packet for `${data.name}` with region `$pastRegionName` and destory player is `${player.name}`")
 
-                        protocolManager.sendServerPacket(player, getPlayerEntityDestoryPacket(data), true)
+                        protocolManager.sendServerPacket(player, getPlayerEntityDestroyPacket(data), true)
                         logger.debug("send ENTITY_DESTROY packet for `${player.name}` with region `$pastRegionName` and destory player is `${data.name}`")
                     }
                 }

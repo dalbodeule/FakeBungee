@@ -36,7 +36,7 @@ object HeaderCommand : CommandExecutor {
 
     private val subCommands = listOf(object : SubCommand {
         override val name = "create"
-        override val parameter: String = "create <asset's name> <content(allow spaces)>"
+        override val parameter: String = "create <asset's name> <content(allow spaces, newlines)>"
         override val description: String =
             "Create a header which named the supplied name parameter based"
 
@@ -53,7 +53,7 @@ object HeaderCommand : CommandExecutor {
                 return
             }
 
-            HeaderManager.headerMap[name] = args.drop(1).joinToString("")
+            HeaderManager.headerMap[name] = args.drop(1).joinToString("").replace("\\n", "\n")
             HeaderManager.save()
 
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Header `$name` has successfully added.")
@@ -66,6 +66,50 @@ object HeaderCommand : CommandExecutor {
         override fun execute(sender: CommandSender, args: List<String>) {
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The Headers of server:")
             sender.sendMessage(HeaderManager.headerMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray())
+        }
+    }, object : SubCommand {
+        override val name = "view"
+        override val parameter = "view <asset's name>"
+        override val description = "View a header which named the supplied name parameter based"
+
+        override fun execute(sender: CommandSender, args: List<String>) {
+            if (args.isEmpty()) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the name of Footer, spaces are not allowed.")
+                return
+            }
+
+            val name = args[0]
+
+            if (name !in HeaderManager.headerMap) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Footer $name is not exists, Please use another name.")
+                return
+            } else {
+                sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Header name: `$name`")
+                HeaderManager.headerMap[name]?.let { sender.sendMessage(ChatColor.translateAlternateColorCodes('&', it)) }
+            }
+        }
+    }, object : SubCommand {
+        override val name = "edit"
+        override val parameter: String = "edit <asset's name> <content(allow spaces, newlines)>"
+        override val description: String = "Edit a header which named the supplied name parameter based"
+
+        override fun execute(sender: CommandSender, args: List<String>) {
+            if (args.isEmpty()) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the name of Header, spaces are not allowed.")
+                return
+            }
+
+            val name = args[0]
+
+            if (name !in HeaderManager.headerMap) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Header $name is not exists, Please use another name.")
+                return
+            }
+
+            HeaderManager.headerMap[name] = args.drop(1).joinToString("").replace("\\n", "\n")
+            HeaderManager.save()
+
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Header `$name` has successfully edited.")
         }
     }, object : SubCommand {
         override val name = "delete"

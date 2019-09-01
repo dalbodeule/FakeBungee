@@ -36,7 +36,7 @@ object FooterCommand : CommandExecutor {
 
     private val subCommands = listOf(object : SubCommand {
         override val name = "create"
-        override val parameter: String = "create <asset's name> <content(allow spaces)>"
+        override val parameter = "create <asset's name> <content(allow spaces, newlines)>"
         override val description: String =
             "Create a Footer which named the supplied name parameter based"
 
@@ -53,24 +53,68 @@ object FooterCommand : CommandExecutor {
                 return
             }
 
-            FooterManager.footerMap[name] = args.drop(1).joinToString("")
+            FooterManager.footerMap[name] = args.drop(1).joinToString("").replace("\\n", "\n")
             FooterManager.save()
 
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Footer `$name` has successfully added.")
         }
     }, object : SubCommand {
         override val name = "list"
-        override val parameter: String = "list"
-        override val description: String = "Show the list of created Footers"
+        override val parameter = "list"
+        override val description = "Show the list of created Footers"
 
         override fun execute(sender: CommandSender, args: List<String>) {
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The Footers of server:")
             sender.sendMessage(FooterManager.footerMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray())
         }
     }, object : SubCommand {
+        override val name = "view"
+        override val parameter = "view <asset's name>"
+        override val description = "View a footer which named the supplied name parameter based"
+
+        override fun execute(sender: CommandSender, args: List<String>) {
+            if (args.isEmpty()) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the name of Footer, spaces are not allowed.")
+                return
+            }
+
+            val name = args[0]
+
+            if (name !in FooterManager.footerMap) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Footer $name is not exists, Please use another name.")
+                return
+            } else {
+                sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Footer name: `$name`")
+                FooterManager.footerMap[name]?.let { sender.sendMessage(ChatColor.translateAlternateColorCodes('&', it)) }
+            }
+        }
+    }, object: SubCommand {
+        override val name = "edit"
+        override val parameter = "edit <asset's name> <content(allow spaces, newlines)>"
+        override val description = "Edit a footer which named the supplied name parameter based"
+
+        override fun execute(sender: CommandSender, args: List<String>) {
+            if (args.isEmpty()) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}You must write the name of Footer, spaces are not allowed.")
+                return
+            }
+
+            val name = args[0]
+
+            if (name !in FooterManager.footerMap) {
+                sender.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}Footer $name is not exists, Please use another name.")
+                return
+            }
+
+            FooterManager.footerMap[name] = args.drop(1).joinToString("").replace("\\n", "\n")
+            FooterManager.save()
+
+            sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Footer `$name` has successfully edited.")
+        }
+    }, object : SubCommand {
         override val name = "delete"
-        override val parameter: String = "delete <asset's name>"
-        override val description: String = "Delete a Footer which named the supplied name parameter based"
+        override val parameter = "delete <asset's name>"
+        override val description = "Delete a Footer which named the supplied name parameter based"
 
         override fun execute(sender: CommandSender, args: List<String>) {
             if (args.isEmpty()) {
@@ -97,8 +141,8 @@ object FooterCommand : CommandExecutor {
         }
     }, object : SubCommand {
         override val name = "reload"
-        override val parameter: String = "reload"
-        override val description: String = "Reload the Footer settings."
+        override val parameter = "reload"
+        override val description = "Reload the Footer settings."
 
         override fun execute(sender: CommandSender, args: List<String>) {
             FooterManager.load()
