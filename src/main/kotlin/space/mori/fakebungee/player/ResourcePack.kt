@@ -4,6 +4,9 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
 import com.comphenix.protocol.events.PacketContainer
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.HoverEvent
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -74,11 +77,11 @@ class ResourcePack (private val plugin: JavaPlugin, private val logger: Logger) 
 
             if (
                 playerResourcePackMap[player] == null ||
-                playerResourcePackMap[player]!!.getURL() != userRSP.getURL()
+                playerResourcePackMap[player]?.getURL() != userRSP.getURL()
             ) {
                 val rsPacket = PacketContainer(PacketType.Play.Server.RESOURCE_PACK_SEND)
 
-                logger.debug("region: $regionName, resource: ${userRSP.toString()}")
+                logger.debug("region: $regionName, resource: ${userRSP.getURL()}")
 
                 rsPacket.strings.write(0, userRSP.getURL()).write(1, userRSP.getHash())
                 playerResourcePackMap[player] = userRSP
@@ -90,6 +93,22 @@ class ResourcePack (private val plugin: JavaPlugin, private val logger: Logger) 
 
                         if (ConfigManager.Config.resourcePackMessage) {
                             player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}A new resource pack has been applied.")
+                            if (player.hasPermission("fb.resource")) {
+                                player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}If the resource pack does not work properly, use command.")
+                                player.spigot().sendMessage( run {
+                                    val text = TextComponent("/resource")
+                                    text.color = net.md_5.bungee.api.ChatColor.UNDERLINE
+                                    text.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/resource")
+                                    text.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(run {
+                                        val text = TextComponent("Click on the message to execute the command.")
+                                        text.color = net.md_5.bungee.api.ChatColor.GREEN
+
+                                        return@run text
+                                    }))
+
+                                    return@run text
+                                })
+                            }
                         }
                         logger.debug("send rs packet for ${player.name}")
                     } catch (e: InvocationTargetException) {

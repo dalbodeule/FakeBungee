@@ -4,12 +4,15 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
 import com.comphenix.protocol.events.PacketContainer
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.HoverEvent
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
-import org.bukkit.plugin.java.JavaPlugin
 import space.mori.fakebungee.config.ConfigManager
 import space.mori.fakebungee.region.RegionManager
 import space.mori.fakebungee.region.resourcepack
@@ -17,10 +20,11 @@ import space.mori.fakebungee.resourcepack.ResourcePack
 import space.mori.fakebungee.resourcepack.ResourcePackManager
 import space.mori.fakebungee.util.Logger
 import java.lang.reflect.InvocationTargetException
+import space.mori.fakebungee.FakeBungee.Companion.instance as plugin
 
-
-class ResourceApplyCommand(private val plugin: JavaPlugin, private val logger: Logger) : CommandExecutor {
+object ResourceApplyCommand : CommandExecutor, TabCompleter {
     private val protocolManager: ProtocolManager = ProtocolLibrary.getProtocolManager()
+    private val logger = Logger(plugin)
 
     override fun onCommand(
         sender: CommandSender, command: Command, label: String, args: Array<out String>
@@ -64,7 +68,20 @@ class ResourceApplyCommand(private val plugin: JavaPlugin, private val logger: L
                     player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}A new resource pack has been applied.")
 
                     if (player.hasPermission("fb.resource")) {
-                        player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}If you try to apply the resource pack again, enter the `/resource` command.")
+                        player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}If you try to apply the resource pack again, enter the command.")
+                        player.spigot().sendMessage( run {
+                            val text = TextComponent("/resource")
+                            text.color = net.md_5.bungee.api.ChatColor.UNDERLINE
+                            text.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/resource")
+                            text.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(run {
+                                val text = TextComponent("Click on the message to execute the command.")
+                                text.color = net.md_5.bungee.api.ChatColor.GREEN
+
+                                return@run text
+                            }))
+
+                            return@run text
+                        })
                     }
                 }
                 logger.debug("send rs packet for ${player.name}")
@@ -73,4 +90,6 @@ class ResourceApplyCommand(private val plugin: JavaPlugin, private val logger: L
             }
         }, 20L*5)
     }
+
+    override fun onTabComplete(p0: CommandSender, p1: Command, p2: String, p3: Array<out String>): MutableList<String> = mutableListOf()
 }

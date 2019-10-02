@@ -23,18 +23,6 @@ repositories {
         url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
     }
     maven {
-        name = 'sonatype'
-        url = 'https://oss.sonatype.org/content/groups/public/'
-    }
-    maven {
-        name = 'kotlinbukkit'
-        url = 'https://dl.bintray.com/finalchild/Final_Repo/'
-    }
-    maven {
-        name = 'PaperMC Repository'
-        url = 'https://papermc.io/repo/repository/maven-public/'
-    }
-    maven {
         name = 'sk89q-repo'
         url = 'http://maven.sk89q.com/repo/'
     }
@@ -49,13 +37,12 @@ repositories {
 }
 
 dependencies {
-    api group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8'
-    api group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib'
-    implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.14-R0.1-SNAPSHOT'
-    implementation group: 'me.finalchild', name: 'kotlinbukkit', version: '1.0.0-rc.1'
-    implementation group: 'com.sk89q.worldedit', name: 'worldedit-bukkit', version: '7.0.0-SNAPSHOT'
-    implementation group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.4.0"
-    compile group: "net.citizensnpcs", name: "citizensapi", version: "2.0.25-SNAPSHOT"
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8'
+
+    compileOnly group: 'org.spigotmc', name: 'spigot', version: '1.14-R0.1-SNAPSHOT'
+    compileOnly group: 'com.sk89q.worldedit', name: 'worldedit-bukkit', version: '7.0.0-SNAPSHOT'
+    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.4.0"
+    compileOnly group: "net.citizensnpcs", name: "citizensapi", version: "2.0.25-SNAPSHOT"
 
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 }

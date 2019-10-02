@@ -8,7 +8,7 @@
  - [x] Region을 기준으로 채팅채널 분리
  - [x] Region을 기준으로 유저리스트 분리
  - [x] Region을 기준으로 적용되는 리소스팩 다르게 적용
- - [ ] Commend Alias 제작
+ - [ ] Commend Alias 제작 (진행중)
  - [x] Header/Footer NewLine 적용
  - [x] Header/Footer null 일 때 대처
  
@@ -24,9 +24,6 @@
 ## Depends
  - bukkit (spigot/paper)
     - recommend ver 1.14.x
- - KotlinBukkit 
-   - https://github.com/finalchild/kotlinbukkit
-   - recommend ver 1.0.0-rc.7
  - WorldEdit
    - https://github.com/EngineHub/WorldEdit
    - recommend ver 7.x
@@ -36,6 +33,7 @@
    
 ## SoftDepends
  - Citizens
+   - https://ci.citizensnpcs.co/job/Citizens2/
    - recommend ver 2.0.25
    - Citizens과 FakeBungee를 같이 사용할 경우 Citizens이 전송하는 데이터를 FakeBungee가 막는 이슈를 해결
  

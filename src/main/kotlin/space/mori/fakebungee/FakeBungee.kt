@@ -29,12 +29,25 @@ class FakeBungee : JavaPlugin() {
 
         instance = this
         getCommand("ping")!!.setExecutor(Ping)
+        // getCommand("ping")!!.tabCompleter = Ping
+
         getCommand("fregion")!!.setExecutor(RegionCommand)
+        // getCommand("fregion")!!.tabCompleter = RegionCommand
+
         getCommand("fresource")!!.setExecutor(ResourceCommand)
+        // getCommand("fresource")!!.tabCompleter = ResourceCommand
+
         getCommand("fconfig")!!.setExecutor(ConfigCommand)
+        getCommand("fconfig")!!.tabCompleter = ConfigCommand
+
         getCommand("fheader")!!.setExecutor(HeaderCommand)
+        // getCommand("fheader")!!.tabCompleter = HeaderCommand
+
         getCommand("ffooter")!!.setExecutor(FooterCommand)
-        getCommand("resource")!!.setExecutor(ResourceApplyCommand(this, logger))
+        // getCommand("ffooter")!!.tabCompleter = FooterCommand
+
+        getCommand("resource")!!.setExecutor(ResourceApplyCommand)
+        getCommand("resource")!!.tabCompleter = ResourceApplyCommand
 
         // RegionManager
         RegionManager.load()

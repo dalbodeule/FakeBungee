@@ -1,8 +1,8 @@
 name: FakeBungee
 version: @version@
 main: space.mori.fakebungee.FakeBungee
+api-version: 1.14
 depend:
-  - kotlinbukkit
   - ProtocolLib
   - WorldEdit
 softdepend:
