@@ -39,7 +39,7 @@ repositories {
 dependencies {
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8'
 
-    compileOnly group: 'org.spigotmc', name: 'spigot', version: '1.14-R0.1-SNAPSHOT'
+    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.14-R0.1-SNAPSHOT'
     compileOnly group: 'com.sk89q.worldedit', name: 'worldedit-bukkit', version: '7.0.0-SNAPSHOT'
     compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.4.0"
     compileOnly group: "net.citizensnpcs", name: "citizensapi", version: "2.0.25-SNAPSHOT"
