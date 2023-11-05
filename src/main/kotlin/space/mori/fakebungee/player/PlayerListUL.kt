@@ -31,7 +31,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.firstOrNull
 
 
-class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) : Listener {
+class PlayerListUL(private val plugin: JavaPlugin, private val logger: Logger) : Listener {
     private val protocolManager: ProtocolManager = ProtocolLibrary.getProtocolManager()
     val isCitizensActivated = plugin.server.pluginManager.isPluginEnabled("Citizens")
 
@@ -50,7 +50,6 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
                         Citizens(logger).filterCitizensNPC(event)
                         event.isCancelled = true
                     }
-
                 }
             }
         })
@@ -74,6 +73,7 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
     @EventHandler(priority = EventPriority.NORMAL)
     internal fun onRegionExit(event: RegionExitEvent) {
         deletePlayerList(event.player, event.player.currentRegions.firstOrNull())
+        makePlayerList(event.player)
         addPlayerList(event.player)
         plugin.server.scheduler.scheduleSyncDelayedTask(plugin, { renderPlayers(event.player) }, 20L)
     }
@@ -128,11 +128,11 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
 
     private fun renderPlayers(player: Player) {
         plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
-            val region = RegionManager.getRegionName(player)
+            val region = RegionManager.getRegionName(player) ?: "default"
 
             for (data in plugin.server.onlinePlayers) {
                 if (data == player) continue
-                else if (region == RegionManager.getRegionName(data)) {
+                else if (region == (RegionManager.getRegionName(data) ?: "default")) {
                     try {
                         protocolManager.sendServerPacket(player, getPlayerEntity(data), false)
                         logger.debug("send NAMED_ENTITY_SPAWN packet for `${player.name}` with region `$region` and render player is `${data.name}`")
@@ -147,7 +147,7 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
     private fun addPlayerList(player: Player) {
         plugin.server.scheduler.scheduleSyncDelayedTask(plugin, Runnable {
             val playerInfoDataList = ArrayList<PlayerInfoData>()
-            val region = RegionManager.getRegionName(player)
+            val region = RegionManager.getRegionName(player) ?: "default"
             val packetPL = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.PLAYER_INFO);
             val packetEP = getPlayerEntity(player)
 
@@ -185,7 +185,7 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
 
             for (data in plugin.server.onlinePlayers) {
                 if (data == player) continue
-                else if (region == RegionManager.getRegionName(data)) {
+                else if (region == (RegionManager.getRegionName(data) ?: "default")) {
                     try {
                         protocolManager.sendServerPacket(data, packetPL, false)
                         logger.debug("send ul:ADD packet for ${data.name} with region $region due to ${player.name}")
@@ -203,11 +203,11 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
     private fun makePlayerList(player: Player) {
         plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
             val playerInfoDataList = ArrayList<PlayerInfoData>()
-            val region = RegionManager.getRegionName(player)
+            val region = RegionManager.getRegionName(player) ?: "default"
             val lists = ArrayList<Player>()
 
             for (data in plugin.server.onlinePlayers) {
-                if (region == RegionManager.getRegionName(data)) {
+                if (region == (RegionManager.getRegionName(data) ?: "default")) {
                     playerInfoDataList.add(getPlayerInfo(data))
                     lists.add(data)
                 }
@@ -254,12 +254,10 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
     }
 
     private fun deletePlayerList(player: Player, pastRegion: Region?) {
-        plugin.server.scheduler.scheduleSyncDelayedTask(plugin, Runnable {
+        plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
             val playerInfoDataList = ArrayList<PlayerInfoData>()
             val region = RegionManager.getRegionName(player)
             val pastRegionName = pastRegion?.name
-
-            if (pastRegion == null && region == null) return@Runnable
 
             val playerInfoDataSelf = ArrayList<PlayerInfoData>()
             playerInfoDataSelf.add(getPlayerInfo(player))
@@ -267,37 +265,18 @@ class PlayerListUL (private val plugin: JavaPlugin, private val logger: Logger) 
             packetSELF.uuidLists.write(0, Collections.singletonList(player.uniqueId))
             val packetED = getPlayerEntityDestroyPacket(player)
 
-            if (region == null) {
-                for (data in plugin.server.onlinePlayers) {
-                    if (data != player) {
-                        playerInfoDataList.add(getPlayerInfo(data))
-                    }
-                    if (RegionManager.getRegionName(data) == pastRegion?.name) {
-                        protocolManager.sendServerPacket(data, packetSELF, false)
-                        logger.debug("send ul:REM_SELF packet for ${data.name} with region $pastRegionName due to ${player.name}")
+            for (data in plugin.server.onlinePlayers) {
+                if (region == pastRegion?.name) {
+                    playerInfoDataList.add(getPlayerInfo(data))
 
-                        protocolManager.sendServerPacket(data, packetED, true)
-                        logger.debug("send ENTITY_DESTROY packet for `${data.name}` with region `$pastRegionName` and destory player is `${player.name}`")
+                    protocolManager.sendServerPacket(data, packetSELF, false)
+                    logger.debug("send ul:REM_SELF packet for ${data.name} with region $pastRegionName due to ${player.name}")
 
-                        protocolManager.sendServerPacket(player, getPlayerEntityDestroyPacket(data), true)
-                        logger.debug("send ENTITY_DESTROY packet for `${player.name}` with region `$pastRegionName` and destory player is `${data.name}`")
+                    protocolManager.sendServerPacket(data, packetED, true)
+                    logger.debug("send ENTITY_DESTROY packet for `${data.name}` with region `$pastRegionName` and destory player is `${player.name}`")
 
-                    }
-                }
-            } else {
-                for (data in plugin.server.onlinePlayers) {
-                    if (RegionManager.getRegionName(data) == pastRegion?.name) {
-                        playerInfoDataList.add(getPlayerInfo(data))
-
-                        protocolManager.sendServerPacket(data, packetSELF, false)
-                        logger.debug("send ul:REM_SELF packet for ${data.name} with region $pastRegionName due to ${player.name}")
-
-                        protocolManager.sendServerPacket(data, packetED, true)
-                        logger.debug("send ENTITY_DESTROY packet for `${data.name}` with region `$pastRegionName` and destory player is `${player.name}`")
-
-                        protocolManager.sendServerPacket(player, getPlayerEntityDestroyPacket(data), true)
-                        logger.debug("send ENTITY_DESTROY packet for `${player.name}` with region `$pastRegionName` and destory player is `${data.name}`")
-                    }
+                    protocolManager.sendServerPacket(player, getPlayerEntityDestroyPacket(data), true)
+                    logger.debug("send ENTITY_DESTROY packet for `${player.name}` with region `$pastRegionName` and destory player is `${data.name}`")
                 }
             }
 
