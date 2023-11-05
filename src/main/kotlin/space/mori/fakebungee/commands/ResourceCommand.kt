@@ -5,6 +5,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import space.mori.fakebungee.resourcepack.ResourcePack
+import java.util.*
 import space.mori.fakebungee.resourcepack.ResourcePackManager as RPM
 
 object ResourceCommand : CommandExecutor {
@@ -54,7 +55,7 @@ object ResourceCommand : CommandExecutor {
                 return
             }
 
-            RPM.resourcePackMap[name] = ResourcePack(args[1], args[2].toLowerCase())
+            RPM.resourcePackMap[name] = ResourcePack(args[1], args[2].lowercase(Locale.getDefault()))
             RPM.save()
 
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}Resource `$name` has successfully added.")
@@ -66,7 +67,9 @@ object ResourceCommand : CommandExecutor {
 
         override fun execute(sender: CommandSender, args: List<String>) {
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The resources of server:")
-            sender.sendMessage(RPM.resourcePackMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray())
+            RPM.resourcePackMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray().forEach {
+                sender.sendMessage(it)
+            }
         }
     }, object : SubCommand {
         override val name = "delete"

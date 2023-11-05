@@ -65,7 +65,10 @@ object FooterCommand : CommandExecutor {
 
         override fun execute(sender: CommandSender, args: List<String>) {
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The Footers of server:")
-            sender.sendMessage(FooterManager.footerMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray())
+            FooterManager.footerMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray().forEach {
+                sender.sendMessage(it)
+            }
+
         }
     }, object : SubCommand {
         override val name = "view"

@@ -95,18 +95,18 @@ class ResourcePack (private val plugin: JavaPlugin, private val logger: Logger) 
                             player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}A new resource pack has been applied.")
                             if (player.hasPermission("fb.resource")) {
                                 player.sendMessage("${ChatColor.RED}[!] ${ChatColor.WHITE}If the resource pack does not work properly, use command.")
-                                player.spigot().sendMessage( run {
+                                player.sendMessage( run {
                                     val text = TextComponent("/resource")
                                     text.color = net.md_5.bungee.api.ChatColor.UNDERLINE
                                     text.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/resource")
                                     text.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(run {
-                                        val text = TextComponent("Click on the message to execute the command.")
-                                        text.color = net.md_5.bungee.api.ChatColor.GREEN
+                                        val text1 = TextComponent("Click on the message to execute the command.")
+                                        text1.color = net.md_5.bungee.api.ChatColor.GREEN
 
-                                        return@run text
+                                        return@run text1
                                     }))
 
-                                    return@run text
+                                    return@run text.toPlainText()
                                 })
                             }
                         }

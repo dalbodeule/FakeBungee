@@ -65,7 +65,9 @@ object HeaderCommand : CommandExecutor {
 
         override fun execute(sender: CommandSender, args: List<String>) {
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The Headers of server:")
-            sender.sendMessage(HeaderManager.headerMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray())
+            HeaderManager.headerMap.keys.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE} $it" }.toTypedArray().forEach {
+                sender.sendMessage(it)
+            }
         }
     }, object : SubCommand {
         override val name = "view"

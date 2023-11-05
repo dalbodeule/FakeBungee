@@ -99,7 +99,10 @@ object RegionCommand : CommandExecutor {
 
         override fun execute(sender: CommandSender, args: List<String>) {
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The regions of server:")
-            sender.sendMessage(RegionManager.regions.values.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE}${it.name}" }.toTypedArray())
+            RegionManager.regions.values.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE}${it.name}" }.toTypedArray().forEach {
+                sender.sendMessage(it)
+            }
+
         }
     }, object : SubCommand {
         override val name = "delete"
@@ -152,7 +155,9 @@ object RegionCommand : CommandExecutor {
             }
 
             sender.sendMessage("${ChatColor.GREEN}[!] ${ChatColor.WHITE}The regions of your:")
-            sender.sendMessage(sender.currentRegions.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE}${it.name}" }.toTypedArray())
+            sender.currentRegions.map { " ${ChatColor.GREEN}* ${ChatColor.WHITE}${it.name}" }.toTypedArray().forEach {
+                sender.sendMessage(it)
+            }
         }
     }, object : SubCommand {
         override val name = "option"

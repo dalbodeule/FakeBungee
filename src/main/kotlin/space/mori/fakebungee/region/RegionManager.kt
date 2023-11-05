@@ -26,7 +26,7 @@ object RegionManager : BukkitRunnable(), Listener {
         for (player in Bukkit.getOnlinePlayers()) {
             val before = playerRegionMap[player.uniqueId] ?: emptySet()
             val after = mutableSetOf<Region>()
-            for (region in RegionManager.regions.values) {
+            for (region in regions.values) {
                 if (player in region) {
                     after += region
                 }
@@ -39,7 +39,7 @@ object RegionManager : BukkitRunnable(), Listener {
             exited.forEach {
                 Bukkit.getPluginManager().callEvent(RegionExitEvent(player, it))
             }
-            RegionManager.playerRegionMap[player.uniqueId] = after
+            playerRegionMap[player.uniqueId] = after
         }
     }
 

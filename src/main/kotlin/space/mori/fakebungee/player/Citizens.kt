@@ -17,20 +17,17 @@ class Citizens (private val logger: Logger) {
         val npcList = CitizensAPI.getNPCRegistry().sorted()
 
         for (data in packet) {
-            for (npc in npcList) {
-                if (data.profile.name != npc.fullName) {
-                    logger.debug("${data.profile.name} and ${npc.fullName} from ${data.profile.name}")
-                    continue
-                } else {
-                    logger.debug("${npc.fullName} is npc")
-                    newPacketList.add(data)
-                    break
-                }
+            val npc = npcList.filter { it.name == data.profile.name }
+            if(npc.isNotEmpty()) {
+                logger.debug("${data.profile.name} and ${npc[0].fullName} from ${data.profile.name}")
+            } else {
+                logger.debug("${data.profile.name} isn't npc")
+                newPacketList.add(data)
             }
         }
 
         val newPacket = event.packet
-        newPacket.playerInfoDataLists.write(0, newPacketList)
+        newPacket.playerInfoDataLists.writeSafely(0, newPacketList)
 
         protocolManager.sendServerPacket(event.player, newPacket, false)
     }

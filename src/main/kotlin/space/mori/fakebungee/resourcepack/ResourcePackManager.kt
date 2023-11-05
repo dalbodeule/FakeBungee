@@ -27,8 +27,8 @@ object ResourcePackManager : Listener {
 
         if (resourcePackMap["default"] == null) {
             resourcePackMap["default"] = ResourcePackType(
-                "https://download.nodecdn.net/containers/nodecraft/minepack/64b9bee7569109cdfe51aa433352d3d4.zip",
-                "d448c8c7e4cc57fa6e786f7811204a1c99bdc64e"
+                "https://mediafilez.forgecdn.net/files/3555/83/VanillaDefault+1.18.zip",
+                "9b6f917ce422a9ff9d01774737c771179dfb16d5"
             )
         }
 
