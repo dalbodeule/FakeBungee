@@ -256,8 +256,8 @@ class PlayerListUL(private val plugin: JavaPlugin, private val logger: Logger) :
     private fun deletePlayerList(player: Player, pastRegion: Region?) {
         plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
             val playerInfoDataList = ArrayList<PlayerInfoData>()
-            val region = RegionManager.getRegionName(player)
-            val pastRegionName = pastRegion?.name
+            val region = RegionManager.getRegionName(player) ?: "default"
+            val pastRegionName = pastRegion?.name ?: "default"
 
             val playerInfoDataSelf = ArrayList<PlayerInfoData>()
             playerInfoDataSelf.add(getPlayerInfo(player))

@@ -95,7 +95,7 @@ class PlayerListHF (private val plugin: JavaPlugin, private val logger: Logger) 
     private fun makePlayerListHF(player: Player) {
         plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
             val hfPacket = PacketContainer(PacketType.Play.Server.PLAYER_LIST_HEADER_FOOTER)
-            val regionName: String = RegionManager.getRegionName(player)?.let { it } ?: "null"
+            val regionName: String = RegionManager.getRegionName(player) ?: "default"
 
             hfPacket.chatComponents.write(
                     0, WrappedChatComponent.fromText(
